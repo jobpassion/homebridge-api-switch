@@ -10,10 +10,10 @@ module.exports = function(homebridge) {
   Service = homebridge.hap.Service;
   Characteristic = homebridge.hap.Characteristic;
 
-  homebridge.registerAccessory("homebridge-nad", "NADRemote", NADRemote);
+  homebridge.registerAccessory("homebridge-api-switch", "APISwitch", APISwitch);
 }
 
-function NADRemote(log, config) {
+function APISwitch(log, config) {
   this.log = log;
 
   this.service = config.service;
@@ -36,7 +36,7 @@ function parseBool(val) {
   return val === true || val === "true"
 }
 
-NADRemote.prototype = {
+APISwitch.prototype = {
 
     getPowerState: function (callback) {
         var requestUrl = this.url + "/status"
@@ -88,7 +88,7 @@ NADRemote.prototype = {
 
         informationService
                 .setCharacteristic(Characteristic.Manufacturer, "PianosaLab")
-                .setCharacteristic(Characteristic.Model, "NAD 705")
+                .setCharacteristic(Characteristic.Model, "APISwitch")
                 .setCharacteristic(Characteristic.SerialNumber, this.sn);
 
         this.service = new Service.Switch(this.name);
