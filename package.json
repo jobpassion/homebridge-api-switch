@@ -1,6 +1,6 @@
 {
   "name": "homebridge-api-switch",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A homebridge adapter for using a generic switch implemented as an API with Apple's Homekit",
   "main": "index.js",
   "scripts": {
