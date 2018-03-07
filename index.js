@@ -20,26 +20,31 @@ function APISwitch(log, config) {
   this.name = config.name;
   this.url = config.url;
 
-  if (config.sn){
-      this.sn = config.sn;
-  } else {
-      var shasum = crypto.createHash('sha1');
-      shasum.update(this.name);
-      this.sn = shasum.digest('base64');
-      this.log('Computed SN ' + this.sn);
-  }
+  //if (config.sn){
+  //    this.sn = config.sn;
+  //} else {
+  //    var shasum = crypto.createHash('sha1');
+  //    shasum.update(this.name);
+  //    this.sn = shasum.digest('base64');
+  //    this.log('Computed SN ' + this.sn);
+  //}
 
   this.client = new Client();
 }
 
 function parseBool(val) {
+  if (1 == val){
+    return true
+  }else if (0 == val){
+    return false
+  }
   return val === true || val === "true"
 }
 
 APISwitch.prototype = {
 
     getPowerState: function (callback) {
-        var requestUrl = this.url + "/status"
+        var requestUrl = this.url + "/switchStatus"
         this.log("Invoking " + requestUrl)
         this.client.get(requestUrl, function (data, response) {
           this.log("Got state from server:")
@@ -47,7 +52,7 @@ APISwitch.prototype = {
           //this.log(data.status)
           //this.log(data.status.power)
           var currentState = false
-          if (data && data.status && data.status.power) {
+          if (data && data.data && data.data.switchStatus) {
             this.log('Parsing bool from ' + data.status.power)
             currentState = parseBool(data.status.power)
           }
@@ -60,16 +65,11 @@ APISwitch.prototype = {
 
       this.log("Setting NAD power to " + powerOn);
 
-      var method = "/power_" + (powerOn ? "on" : "off")
+      var method = "/switch?command=" + (powerOn ? "on" : "off")
       var requestUrl = this.url + method
       this.log("Invoking " + requestUrl)
 
-      var args = {
-        data: { power: powerOn },
-        headers: { "Content-Type": "application/json" }
-      }
-
-      this.client.post(requestUrl, args, function (data, response) {
+      this.client.get(requestUrl, function (data, response) {
         this.log("Got response from server:" + data);
         callback();
       }.bind(this));
