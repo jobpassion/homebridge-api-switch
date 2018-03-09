@@ -19,6 +19,7 @@ function APISwitch(log, config) {
   this.service = config.service;
   this.name = config.name;
   this.url = config.url;
+  this.command = config.command;
 
   //if (config.sn){
   //    this.sn = config.sn;
@@ -47,14 +48,16 @@ APISwitch.prototype = {
         var requestUrl = this.url + "/switchStatus"
         this.log("Invoking " + requestUrl)
         this.client.get(requestUrl, function (data, response) {
-          this.log("Got state from server:")
+          //this.log("Got state from server:")
+          data = JSON.parse(data)
+	  this.log("Got response from server:" + data.data.switchStatus);
           //this.log(data)
           //this.log(data.status)
           //this.log(data.status.power)
           var currentState = false
           if (data && data.data && data.data.switchStatus) {
-            this.log('Parsing bool from ' + data.status.power)
-            currentState = parseBool(data.status.power)
+            this.log('Parsing bool from ' + data.data.switchStatus)
+            currentState = parseBool(data.data.switchStatus)
           }
           this.log('Setting current state: ' + currentState)
           callback(null, currentState);
@@ -65,7 +68,7 @@ APISwitch.prototype = {
 
       this.log("Setting NAD power to " + powerOn);
 
-      var method = "/switch?command=" + (powerOn ? "on" : "off")
+      var method = "/switch?command=" + (powerOn ? this.command["on"] : this.command["off"])
       var requestUrl = this.url + method
       this.log("Invoking " + requestUrl)
 
